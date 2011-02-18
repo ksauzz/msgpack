@@ -295,7 +295,7 @@ public class JavassistTemplateBuilder extends TemplateBuilder {
 				} else {
 					buildString("if(_$$_t.%s == null) {", e.getName());
 					if(!e.isNullable() && !e.isOptional()) {
-						buildString("throw new %s();", MessageTypeException.class.getName());
+						buildString("throw new %s(\"%s is null.\");", MessageTypeException.class.getName(), e.getName());
 					} else {
 						buildString("$1.packNil();");
 					}
@@ -335,7 +335,7 @@ public class JavassistTemplateBuilder extends TemplateBuilder {
 				buildString("if($1.tryUnpackNull()) {");
 					if(e.isRequired()) {
 						// Required + nil => exception
-						buildString("throw new %s();", MessageTypeException.class.getName());
+						buildString("throw new %s(\"%s is null.\");", MessageTypeException.class.getName(), e.getName());
 					} else if(e.isOptional()) {
 						// Optional + nil => keep default value
 					} else {  // Nullable

@@ -48,10 +48,7 @@ public class DefaultTemplate implements Template {
 			((MessagePackable)target).messagePack(pk);
 			return;
 		}
-		Template tmpl = TemplateRegistry.tryLookup(lookupType);
-		if(tmpl == this || tmpl == null) {
-			throw new MessageTypeException();
-		}
+		Template tmpl = tryLookupTemplate();
 		tmpl.pack(pk, target);
 	}
 
@@ -67,10 +64,7 @@ public class DefaultTemplate implements Template {
 			((MessageUnpackable)to).messageUnpack(pac);
 			return to;
 		}
-		Template tmpl = TemplateRegistry.tryLookup(lookupType);
-		if(tmpl == this || tmpl == null) {
-			throw new MessageTypeException();
-		}
+		Template tmpl = tryLookupTemplate();
 		return tmpl.unpack(pac, to);
 	}
 
@@ -86,11 +80,16 @@ public class DefaultTemplate implements Template {
 			((MessageConvertable)to).messageConvert(from);
 			return from;
 		}
+		Template tmpl = tryLookupTemplate();
+		return tmpl.convert(from, to);
+	}
+
+	private Template tryLookupTemplate() {
 		Template tmpl = TemplateRegistry.tryLookup(lookupType);
 		if(tmpl == this || tmpl == null) {
-			throw new MessageTypeException();
+			throw new MessageTypeException("template not found for lookupType[" + lookupType + "]");
 		}
-		return tmpl.convert(from, to);
+		return tmpl;
 	}
 }
 
